@@ -19,6 +19,21 @@ const bookSchema = mongoose.Schema({
         required: [true, "Stock count is required!"],
         min: [1, "Price cannot be negative"],
         max: [255, "Price cannot exceed 10,000"]
+    },
+    createdAt: {
+        type: Date,
+        default: Date.now
+    },
+    image: {
+        type: String,
+        default:"",
+        validate: {
+            validator: function(v){
+                if(!v) return true;
+                return /^https?:\/\/.+/.test(v)
+            },
+            message: "Image must a valid URL"
+        }
     }
 })
 
