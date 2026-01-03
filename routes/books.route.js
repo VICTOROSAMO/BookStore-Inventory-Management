@@ -7,8 +7,32 @@ const { body, validationResult} = require("express-validator")
 const router = express.Router()
 
 
-router.post("/", async(req, res) => {
+router.post("/", 
+    [
+      body("bookName")
+      .notEmpty().withMessage("Book name is required.")
+      .isLength({min:5, max:100}).withMessage("Book name must be between 5 to 100 characters."),
+
+      body("price")
+      .notEmpty().withMessage("price is required.")
+      .isFloat({min:1, max:1000}).withMessage("price must be between 1 and 1000"),
+      
+      body("countInStock")
+      .notEmpty().withMessage("Price is required.")
+      .isInt({min:1, max:255}).withMessage("Stock count must be between 1 and 255"),
+
+      body("image")
+      .notEmpty().withMessage("Image URL is required")
+      .isURL().withMessage("Image must be a valid URL")
+
+    ]
+    ,async(req, res) => {
     try {
+    const errors = validationResult(req)  
+    
+    if(!errors.isEmpty()){
+        return res.status(400).json({errors: errors.array()})
+    }
     const newBook = await BookModel.create(req.body)
     res.status(201).json(newBook)
 
