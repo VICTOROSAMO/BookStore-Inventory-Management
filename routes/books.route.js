@@ -3,36 +3,17 @@ const express = require("express")
 const mongoose = require("mongoose")
 const BookModel = require("../models/books.model")
 const { body, validationResult, param} = require("express-validator")
+const {createBookValidation,
+        updateBookValidation,
+        handleValidationError} = require("../validators/book.validator")
 
 const router = express.Router()
 
 
-router.post("/", 
-    [
-      body("bookName")
-      .notEmpty().withMessage("Book name is required.")
-      .isLength({min:5, max:100}).withMessage("Book name must be between 5 to 100 characters."),
-
-      body("price")
-      .notEmpty().withMessage("price is required.")
-      .isFloat({min:1, max:1000}).withMessage("price must be between 1 and 1000"),
-      
-      body("countInStock")
-      .notEmpty().withMessage("Price is required.")
-      .isInt({min:1, max:255}).withMessage("Stock count must be between 1 and 255"),
-
-      body("image")
-      .notEmpty().withMessage("Image URL is required")
-      .isURL().withMessage("Image must be a valid URL")
-
-    ]
-    ,async(req, res) => {
+router.post("/", createBookValidation, handleValidationError, async(req, res) => {
     try {
     const errors = validationResult(req)  
     
-    if(!errors.isEmpty()){
-        return res.status(400).json({errors: errors.array()})
-    }
     const newBook = await BookModel.create(req.body)
     res.status(201).json(newBook)
 
@@ -86,35 +67,10 @@ router.delete("/:id", async (req, res) => {
 })
 
 
-router.put("/:id", 
-    
- [
-    param("id").isMongoId().withMessage("Invalid Book Id"),  
-    
-    body("bookName")
-      .optional()
-      .isLength({min:5, max:100}).withMessage("Book name must be between 5 to 100 characters."),
-
-      body("price")
-      .optional()
-      .isFloat({min:1, max:1000}).withMessage("price must be between 1 and 1000"),
-      
-      body("countInStock")
-      .optional()
-      .isInt({min:1, max:255}).withMessage("Stock count must be between 1 and 255"),
-
-      body("image")
-      .optional()
-      .isURL().withMessage("Image must be a valid URL")
-
-    ]
-    ,async (req, res) => {
+router.put("/:id", updateBookValidation, handleValidationError, async (req, res) => {
     try {
-         const errors = validationResult(req)  
+        
     
-    if(!errors.isEmpty()){
-        return res.status(400).json({errors: errors.array()})
-    }
         const { id } = req.params
         const updatedBook = await BookModel.findByIdAndUpdate(id, req.body, {new: true})
 
