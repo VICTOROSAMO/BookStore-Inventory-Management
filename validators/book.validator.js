@@ -21,7 +21,7 @@ const createBookValidation = [
 
 
     const updateBookValidation = [
-        param("id").isMongoId().withMessage("Invalid Book Id"),  
+        
         
         body("bookName")
           .optional()
@@ -41,6 +41,8 @@ const createBookValidation = [
     
         ];
 
+        const idValidation = [param("id").isMongoId().withMessage("Invalid book Id")]
+
         const handleValidationError = (req, res, next) => {
              const errors = validationResult(req)  
                 
@@ -53,6 +55,7 @@ const createBookValidation = [
     module.exports={
         createBookValidation,
         updateBookValidation,
+        idValidation,
         handleValidationError
     }
  

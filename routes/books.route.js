@@ -2,10 +2,13 @@
 const express = require("express")
 const mongoose = require("mongoose")
 const BookModel = require("../models/books.model")
-const { body, validationResult, param} = require("express-validator")
+const { body, validationResult} = require("express-validator")
 const {createBookValidation,
+        idValidation,
         updateBookValidation,
         handleValidationError} = require("../validators/book.validator")
+
+const {param} = require("express-validator")        
 
 const router = express.Router()
 
@@ -34,7 +37,7 @@ router.get("/", async(req, res) => {
     
 })
 
-router.get("/:id", async(req, res) => {
+router.get("/:id", idValidation, handleValidationError, async(req, res) => {
    try {
     const { id } = req.params
     const book = await BookModel.findById(id)
@@ -50,7 +53,7 @@ router.get("/:id", async(req, res) => {
    }
 })
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", idValidation, handleValidationError, async (req, res) => {
     try {
         const { id } = req.params
         const deletedBook = await BookModel.findByIdAndDelete(id)
@@ -67,7 +70,7 @@ router.delete("/:id", async (req, res) => {
 })
 
 
-router.put("/:id", updateBookValidation, handleValidationError, async (req, res) => {
+router.put("/:id", idValidation, updateBookValidation, handleValidationError, async (req, res) => {
     try {
         
     

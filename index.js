@@ -1,5 +1,8 @@
 
 const express = require("express")
+const i18next = require("i18next")
+const backend = require("i18next-fs-backend")
+const middleware = require("i18next-http-middleware")
 const mongoose = require("mongoose")
 const app = express()
 require("dotenv").config()
